@@ -87,7 +87,7 @@ RUN apt-get update && apt-get -y install libgtk2.0-dev pkg-config libavcodec-dev
     apt-get autoremove -y && apt-get clean
  
 # solve an import cv2 issue in python
-RUN apt-get -y update && cd \ && conda install -y libgcc
+RUN apt-get -y update && cd / && conda install -y libgcc
  
 RUN apt-get install -y libfreetype6-dev && \
     apt-get install -y libglib2.0-0 libxext6 libsm6 libxrender1 libfontconfig1 --fix-missing && \
