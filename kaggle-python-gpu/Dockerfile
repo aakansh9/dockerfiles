@@ -54,16 +54,14 @@ RUN pip install seaborn python-dateutil dask pytagcloud pyyaml ggplot joblib \
 RUN mkdir -p /opt/conda/var/lib/dbus/ # problem with dbus ??
 
 RUN apt-get update && apt-get install -y \
-    fontconfig fontconfig-config fonts-dejavu-core ghostscript gsfonts hicolor-icon-theme \
+    dbus fontconfig fontconfig-config fonts-dejavu-core ghostscript gsfonts hicolor-icon-theme \
     libavahi-client3 libavahi-common-data libavahi-common3 libcairo2 libcap-ng0 libcroco3 \
     libcups2 libcupsfilters1 libcupsimage2 libdatrie1 libdjvulibre-text libdjvulibre21 libfftw3-double3 libfontconfig1 \
     libfreetype6 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgomp1 libgraphite2-3 libgs9 libgs9-common libharfbuzz0b libijs-0.35 \
     libjasper1 libjbig0 libjbig2dec0 liblcms2-2 liblqr-1-0 libltdl7 libmagickcore-6.q16-2 \
     libmagickcore-6.q16-2-extra libmagickwand-6.q16-2 libnetpbm10 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
     libpaper-utils libpaper1 libpixman-1-0 libpng12-0 librsvg2-2 librsvg2-common libthai-data libthai0 libtiff5 libwmf0.2-7 \
-    libxcb-render0 libxcb-shm0 netpbm poppler-data p7zip-full && \
-    ## libdbus-1-3
-    # unable to install -> dbus
+    libxcb-render0 libxcb-shm0 netpbm poppler-data p7zip-full libdbus-1-3 && \
     # not working -> apt-get install -y fonts-droid libilmbase6 libjpeg62-turbo libopenexr6 && \
     cd /usr/local/src && \
     wget http://www.imagemagick.org/download/ImageMagick.tar.gz && \
@@ -176,7 +174,7 @@ RUN cd /usr/local/src && mkdir keras && cd keras && \
 
     # Stop-words
     pip install stop-words && \
-    #cd /usr/local/src && python cache_keras_weights.py && \
+    cd /usr/local/src && python cache_keras_weights.py && \
 
     # clean up
     rm -rf /root/.cache/pip/* && \
