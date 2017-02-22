@@ -170,7 +170,7 @@ RUN cd /usr/local/src && mkdir keras && cd keras && \
     sentiwordnet shakespeare sinica_treebank smultron snowball_data spanish_grammars \
     state_union stopwords subjectivity swadesh switchboard tagsets timit toolbox treebank \
     twitter_samples udhr2 udhr unicode_samples universal_tagset universal_treebanks_v20 \
-    vader_lexicon verbnet webtext word2vec_sample wordnet wordnet_ic words ycoe && \
+    vader_lexicon verbnet webtext word2vec_sample wordnet wordnet_ic words ycoe
 
 
 # Stop-words  
