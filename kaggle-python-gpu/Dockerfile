@@ -5,6 +5,7 @@ ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
 # Commands from continuumio/anaconda3:latest to install anaconda3
 RUN apt-get update --fix-missing && apt-get install -y \
+    apt-utils \
     wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
     git mercurial subversion
@@ -50,15 +51,18 @@ RUN pip install seaborn python-dateutil dask pytagcloud pyyaml ggplot joblib \
     husl geopy ml_metrics mne pyshp gensim
 
 # The apt-get version of imagemagick is out of date and has compatibility issues, so we build from source
+RUN mkdir -p /opt/conda/var/lib/dbus/ # problem with dbus ??
+
 RUN apt-get update && apt-get install -y \
     fontconfig fontconfig-config fonts-dejavu-core ghostscript gsfonts hicolor-icon-theme \
     libavahi-client3 libavahi-common-data libavahi-common3 libcairo2 libcap-ng0 libcroco3 \
-    libcups2 libcupsfilters1 libcupsimage2 libdatrie1 libdbus-1-3 libdjvulibre-text libdjvulibre21 libfftw3-double3 libfontconfig1 \
+    libcups2 libcupsfilters1 libcupsimage2 libdatrie1 libdjvulibre-text libdjvulibre21 libfftw3-double3 libfontconfig1 \
     libfreetype6 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgomp1 libgraphite2-3 libgs9 libgs9-common libharfbuzz0b libijs-0.35 \
     libjasper1 libjbig0 libjbig2dec0 liblcms2-2 liblqr-1-0 libltdl7 libmagickcore-6.q16-2 \
     libmagickcore-6.q16-2-extra libmagickwand-6.q16-2 libnetpbm10 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
     libpaper-utils libpaper1 libpixman-1-0 libpng12-0 librsvg2-2 librsvg2-common libthai-data libthai0 libtiff5 libwmf0.2-7 \
     libxcb-render0 libxcb-shm0 netpbm poppler-data p7zip-full && \
+    ## libdbus-1-3
     # unable to install -> dbus
     # not working -> apt-get install -y fonts-droid libilmbase6 libjpeg62-turbo libopenexr6 && \
     cd /usr/local/src && \
