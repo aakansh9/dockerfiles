@@ -172,8 +172,10 @@ RUN cd /usr/local/src && mkdir keras && cd keras && \
     twitter_samples udhr2 udhr unicode_samples universal_tagset universal_treebanks_v20 \
     vader_lexicon verbnet webtext word2vec_sample wordnet wordnet_ic words ycoe && \
 
-    # Stop-words
-    pip install stop-words && \
+
+# Stop-words  
+ADD cache_keras_weights.py /usr/local/src/cache_keras_weights.py
+RUN pip install stop-words && \
     cd /usr/local/src && python cache_keras_weights.py && \
 
     # clean up
