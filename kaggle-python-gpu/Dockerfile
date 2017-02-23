@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-cudnn-devel-ubuntu16.04
+FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04
 LABEL maintainer "AAKANSH GUPTA <aakansh9+contact@gmail.com>"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
