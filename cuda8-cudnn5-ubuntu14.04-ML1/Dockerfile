@@ -33,4 +33,4 @@ RUN apt-get update && apt-get install -y build-essential && \
     cd /usr/local/src && wget http://www.imagemagick.org/download/ImageMagick.tar.gz && \
     tar xzf ImageMagick.tar.gz && cd `ls -d ImageMagick-*` && pwd && ls -al && ./configure && \
     make -j $(nproc) && make install && \
-    cd ../ && rm -rf ImageMagick* && \
+    cd ../ && rm -rf ImageMagick*
