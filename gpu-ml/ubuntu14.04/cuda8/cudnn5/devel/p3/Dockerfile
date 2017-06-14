@@ -34,4 +34,4 @@ RUN apt-get -y update && \
     # clean up
     rm -rf /usr/local/src/opencv && \
     rm -rf /root/.cache/pip/* && \
-    apt-get autoremove -y && apt-get clean && \
+    apt-get autoremove -y && apt-get clean
