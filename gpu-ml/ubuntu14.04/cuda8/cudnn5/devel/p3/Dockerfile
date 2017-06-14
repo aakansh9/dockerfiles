@@ -1,6 +1,6 @@
 
 
-FROM aakansh9/python-ml1
+FROM aakansh9/gpu-ml:ubuntu14.04-cuda8-cudnn5-devel-p2
 LABEL maintainer "AAKANSH GUPTA <aakansh9+contact@gmail.com>"
 
     

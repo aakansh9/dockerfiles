@@ -3,7 +3,7 @@
 # Ubuntu 14.04
 # anaconda 3
 
-FROM aakansh9/cuda8-cudnn5-ubuntu14.04-anaconda3
+FROM aakansh9/gpu-ml:ubuntu14.04-cuda8-cudnn5-devel-p1
 LABEL maintainer "AAKANSH GUPTA <aakansh9+contact@gmail.com>"
 
 RUN apt-get update && apt-get install -y build-essential && \
