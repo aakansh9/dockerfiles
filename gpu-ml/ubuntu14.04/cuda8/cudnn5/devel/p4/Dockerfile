@@ -48,7 +48,7 @@ RUN apt-get -y update && \
     #--------- PUDB for local debugging convenience
     pip install pudb && \
     
-    #----CHECK----- Regularized Greedy Forests
+    #--------- Regularized Greedy Forests
     apt-get install zip unzip && \
     cd /usr/local/src && wget https://github.com/fukatani/rgf_python/releases/download/0.2.0/rgf1.2.zip && \
     unzip rgf1.2.zip && cd rgf1.2 && make && mv bin/rgf /usr/local/bin && \
