@@ -1,8 +1,12 @@
 
+FROM aakansh9/gpu-ml:ubuntu14.04-cuda8-cudnn5-devel-p5
+LABEL maintainer "AAKANSH GUPTA <aakansh9+contact@gmail.com>"
+
 
 RUN apt-get -y update && \
 
     #----- libgpuarray + pygpu
+    apt-get install -y gfortran liblapack-dev libopenblas-dev && \
     cd /usr/local/src && \
     yes | conda install -c conda-forge pygpu && \
 
@@ -10,7 +14,7 @@ RUN apt-get -y update && \
     pip install pycuda && \
 
     #----- skcuda (dev version)
-    pip install git+https://github.com/lebedov/scikit-cuda.git#egg=scikit-cuda . && \
+    pip install git+https://github.com/lebedov/scikit-cuda.git#egg=scikit-cuda && \
 
     #----- Dev branch of Theano
     cd /usr/local/src/ && pip install git+git://github.com/Theano/Theano.git --upgrade --no-deps && \
@@ -21,7 +25,7 @@ RUN apt-get -y update && \
     cd /usr/local/src &&  git clone --depth 1 https://github.com/pybrain/pybrain && \
     cd pybrain && python setup.py install && \
     
-    #----- OpenDeep
+    #---NOT WORKING-- OpenDeep
     cd /usr/local/src && git clone https://github.com/vitruvianscience/opendeep.git && \
     cd opendeep && python setup.py develop  && \
     
@@ -30,7 +34,33 @@ RUN apt-get -y update && \
     git clone --depth 1 https://github.com/Lasagne/Lasagne.git && cd Lasagne && \
     pip install -r requirements.txt && python setup.py install && \
     
-    #----- keras
+    #----- neon
+    cd /usr/local/src && \
+    git clone --depth 1 https://github.com/NervanaSystems/neon.git && \
+    cd neon && make sysinstall && \
+
+    #----- nolearn
+    cd /usr/local/src && mkdir nolearn && cd nolearn && \
+    git clone --depth 1 https://github.com/dnouri/nolearn.git && cd nolearn && \
+    echo "x" > README.rst && echo "x" > CHANGES.rst && \
+    python setup.py install && \
+
+    #----- chainer
+    pip install cupy && \
+    pip install chainer && \
+    
+    #----- MXNet
+    apt-get -y update && apt-get install -y libopenblas-dev libopencv-dev && \
+    cd /usr/local/src && git clone --recursive https://github.com/dmlc/mxnet && \
+    cd mxnet && cp make/config.mk . && \
+    sed -i 's/USE_BLAS = atlas/USE_BLAS = openblas/g' config.mk && \
+    sed -i 's/USE_CUDA = 0/USE_CUDA = 1/g' config.mk && \
+    sed -i 's/USE_CUDA_PATH = NONE/USE_CUDA_PATH = \/usr\/local\/cuda/g' config.mk && \
+    sed -i 's/USE_CUDNN = 0/USE_CUDNN = 1/g' config.mk && \
+    make && cd python && python setup.py install && \
+
+    #----- Keras
+    apt-get install -y libhdf5-dev python-h5py python-yaml && \
     cd /usr/local/src && mkdir keras && cd keras && \
     git clone --depth 1 https://github.com/fchollet/keras.git && \
     cd keras && python setup.py install && \
@@ -39,44 +69,12 @@ RUN apt-get -y update && \
     cd /usr/local/src && mkdir keras-rl && cd keras-rl && \
     git clone --depth 1 https://github.com/matthiasplappert/keras-rl.git && \
     cd keras-rl && python setup.py install && \
-    
-    #----- neon
-    cd /usr/local/src && \
-    git clone --depth 1 https://github.com/NervanaSystems/neon.git && \
-    cd neon && pip install -e . && \
 
-    #----- nolearn
-    cd /usr/local/src && mkdir nolearn && cd nolearn && \
-    git clone --depth 1 https://github.com/dnouri/nolearn.git && cd nolearn && \
-    echo "x" > README.rst && echo "x" > CHANGES.rst && \
-    python setup.py install && \
-    
-
-    
-    
-    #----- chainer
-    pip install chainer && \
-
-    cd /usr/local/src && python cache_keras_weights.py && \
-    
-    #----- clean up
-    rm -rf /root/.cache/pip/* && \
-    apt-get autoremove -y && apt-get clean && \
-    rm -rf /usr/local/src/*
-
-    #----- MXNet
-    cd /usr/local/src && git clone --recursive https://github.com/dmlc/mxnet && \
-    cd /usr/local/src/mxnet && cp make/config.mk . && \
-    sed -i 's/ADD_LDFLAGS =/ADD_LDFLAGS = -lstdc++/' config.mk && \
-    make && cd python && python setup.py install && \
-    
-
-    
     #----- h2o
     # This requires python-software-properties and Java.
     apt-get install -y python-software-properties zip && \
     echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list &&     echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list &&     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 C857C906 2B90D010 && \
-    apt-get update && \
+    apt-get -y update && \
     echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
     echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
     apt-get install -y oracle-java8-installer && \
@@ -85,34 +83,8 @@ RUN apt-get -y update && \
     wget --no-check-certificate -i latest -O h2o.zip && rm latest && \
     unzip h2o.zip && rm h2o.zip && cp h2o-*/h2o.jar . && \
     pip install `find . -name "*whl"` && \
-    
-    #----- Keras setup
-    # Keras likes to add a config file in a custom directory when it's
-    # first imported. This doesn't work with our read-only filesystem, so we
-    # have it done now
-    python -c "from keras.models import Sequential"  && \
-    
-    #----- Switch to TF backend
-    sed -i 's/theano/tensorflow/' /root/.keras/keras.json  && \
-    
-    #----- Re-run it to flush any more disk writes
-    python -c "from keras.models import Sequential; from keras import backend; print(backend._BACKEND)" && \
-    # Keras reverts to /tmp from ~ when it detects a read-only file system
-    mkdir -p /tmp/.keras && cp /root/.keras/keras.json /tmp/.keras && \
-    
 
-    
 
-    
-    
-
-    ###########
-    #
-    #      NEW CONTRIBUTORS:
-    # Please add new pip/apt installs in this block. Don't forget a "&& \" at the end
-    # of all non-final lines. Thanks!
-    #
-    ###########
 RUN pip install --upgrade mpld3 && \
     pip install mplleaflet && \
     pip install gpxpy && \
@@ -127,7 +99,6 @@ RUN pip install --upgrade mpld3 && \
     pip install plotly && \
     pip install git+https://github.com/nicta/dora.git && \
     pip install git+https://github.com/hyperopt/hyperopt.git && \
-    # tflean. Deep learning library featuring a higher-level API for TensorFlow. http://tflearn.org
     pip install git+https://github.com/tflearn/tflearn.git && \
     pip install fitter && \
     pip install langid && \
@@ -167,7 +138,7 @@ RUN pip install --upgrade mpld3 && \
     pip install bayespy && \
     pip install gplearn && \
     pip install PyAstronomy && \
-    conda install pytorch torchvision -c soumith && \
+    yes | conda install pytorch torchvision -c soumith && \
     pip install squarify && \
     pip install fuzzywuzzy && \
     pip install python-louvain && \
@@ -183,9 +154,12 @@ RUN pip install --upgrade mpld3 && \
     pip install speedml && \
     pip install nibabel && \
     pip install mlens && \
-  
-    ##### ^^^^ Add new contributions above here
-    # clean up pip cache
-    rm -rf /root/.cache/pip/* && \
+
+    #----- clean up
+    cd /usr/local/ && rm -rf /root/.cache/pip/* && \
+    apt-get autoremove -y && apt-get clean && \
+    rm -rf /usr/local/src/*
+
     # Required to display Altair charts in Jupyter notebook
     jupyter nbextension install --user --py vega
+
