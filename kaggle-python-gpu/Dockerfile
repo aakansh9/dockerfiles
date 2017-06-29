@@ -1,22 +1,26 @@
-FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu16.04
+# CUDA 8
+# cuDNN 5
+# Ubuntu 14.04
+
+FROM nvidia/cuda:8.0-cudnn5-devel-ubuntu14.04
 LABEL maintainer "AAKANSH GUPTA <aakansh9+contact@gmail.com>"
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 
-# Commands from continuumio/anaconda3:latest to install anaconda3
-RUN apt-get update --fix-missing && apt-get install -y \
-    apt-utils \
-    wget bzip2 ca-certificates \
+# Install anaconda3
+# Following code is from continuumio/anaconda3:latest
+# Needs to be maintained by copy-paste from continuumio/anaconda3:latest
+
+RUN apt-get update --fix-missing && apt-get install -y apt-utils wget bzip2 ca-certificates \
     libglib2.0-0 libxext6 libsm6 libxrender1 \
     git mercurial subversion
 
 RUN echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/archive/Anaconda3-4.3.0-Linux-x86_64.sh -O ~/anaconda.sh && \
+    wget --quiet https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh -O ~/anaconda.sh && \
     /bin/bash ~/anaconda.sh -b -p /opt/conda && \
     rm ~/anaconda.sh
 
-RUN apt-get update && apt-get install -y \
-    curl grep sed dpkg && \
+RUN apt-get update && apt-get install -y curl grep sed dpkg && \
     TINI_VERSION=`curl https://github.com/krallin/tini/releases/latest | grep -o "/v.*\"" | sed 's:^..\(.*\).$:\1:'` && \
     curl -L "https://github.com/krallin/tini/releases/download/v${TINI_VERSION}/tini_${TINI_VERSION}.deb" > tini.deb && \
     dpkg -i tini.deb && \
@@ -24,6 +28,13 @@ RUN apt-get update && apt-get install -y \
     apt-get clean
 
 ENV PATH /opt/conda/bin:$PATH
+
+
+
+
+
+
+
 
 RUN apt-get update && apt-get install -y build-essential
 
@@ -226,7 +237,25 @@ RUN apt-get update && \
     cd /usr/local/src/mxnet && cp make/config.mk . && \
     sed -i 's/ADD_LDFLAGS =/ADD_LDFLAGS = -lstdc++/' config.mk && \
     make && cd python && python setup.py install && \
-    
+
+    # Mxnet with GPU
+    apt-get update && apt-get install -y \
+       git \
+       libopenblas-dev \
+       libopencv-dev \
+       libatlas-base-dev \
+       python-dev \
+       python-numpy \
+       python-setuptools && \
+    cd /usr/local/src && git clone --recursive https://github.com/dmlc/mxnet && \
+    cd /usr/local/src/mxnet && cp make/config.mk . && \
+    sed -i 's/USE_BLAS = atlas/USE_BLAS = openblas/g' config.mk && \
+    sed -i 's/USE_CUDA = 0/USE_CUDA = 1/g' config.mk && \
+    sed -i 's/USE_CUDA_PATH = NONE/USE_CUDA_PATH = \/usr\/local\/cuda/g' config.mk && \
+    sed -i 's/USE_CUDNN = 0/USE_CUDNN = 1/g' config.mk && \
+    make -j"$(nproc)" && cd python && python setup.py install && \
+
+
     # set backend for matplotlib to Agg
     matplotlibrc_path=$(python -c "import site, os, fileinput; packages_dir = site.getsitepackages()[0]; print(os.path.join(packages_dir, 'matplotlib', 'mpl-data', 'matplotlibrc'))") && \
     sed -i 's/^backend      : Qt5Agg/backend      : Agg/' $matplotlibrc_path  && \
@@ -393,6 +422,12 @@ RUN cd / && pip install --upgrade mpld3 && \
     rm -rf /root/.cache/pip/* && \
     # Required to display Altair charts in Jupyter notebook
     jupyter nbextension install --user --py vega
+
+# Dicom images packages
+RUN cd /usr/local/src && \
+    conda install -y conda-build && \
+    git clone https://github.com/SimpleITK/SimpleITKCondaRecipe.git && \
+    conda build recipe
 
 RUN apt-get update && apt-get install -y \
     tmux \
