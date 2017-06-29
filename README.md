@@ -1,2 +1,1 @@
-# dockerfiles
-Compilation of Dockerfiles
+A Compilation of Dockerfiles.
