@@ -1,5 +1,5 @@
 
-[self-note]
+This build is divided into several dockerfiles.
 
 To build enter the current directory and do -
 
