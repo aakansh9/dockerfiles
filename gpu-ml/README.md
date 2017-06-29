@@ -70,7 +70,7 @@ sudo nvidia-smi -ac 2505,875 # set GPU clock to max frequency
 
 5. Build Docker images
 
-Enter the directory containing the dockerfile and do 
+ Enter the directory containing the dockerfile and do 
 
 ```sh
 nvidia-docker build .
@@ -78,18 +78,6 @@ docker tag [imagename] aakansh9/cuda8-cudnn5-ubuntu14.04-anaconda3:latest
 docker login
 docker push aakansh9/cuda8-cudnn5-ubuntu14.04-anaconda3:latest
 ```
-
-## What is Included
-
-Everything included in Kaggle's Docker build is included. This includes - 
-
-- Python3 Anaconda environment
-- All major Deep Learning frameworks
-- All major Machine Learning libraries
-- All major Statistical libraries
-- All major visualizing tools
-
-Please check the dockerfile for specifics.
 
 ## CONTRIBUTING
 
