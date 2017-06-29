@@ -70,7 +70,7 @@ sudo nvidia-smi -ac 2505,875 # set GPU clock to max frequency
 
 5. Build Docker images
 
- Enter the directory containing the dockerfile and do 
+   Enter the directory containing the dockerfile and do 
 
 ```sh
 nvidia-docker build .
