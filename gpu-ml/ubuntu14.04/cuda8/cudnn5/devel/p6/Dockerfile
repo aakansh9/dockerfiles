@@ -5,6 +5,9 @@ LABEL maintainer "AAKANSH GUPTA <aakansh9+contact@gmail.com>"
 
 RUN apt-get -y update && \
 
+    #----- some terminal tools
+    apt-get -y install htop tmux vim && \
+
     #----- libgpuarray + pygpu
     apt-get install -y gfortran liblapack-dev libopenblas-dev && \
     cd /usr/local/src && \
