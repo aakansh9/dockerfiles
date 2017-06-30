@@ -85,7 +85,7 @@ RUN apt-get -y update && \
     wget http://h2o-release.s3.amazonaws.com/h2o/latest_stable -O latest && \
     wget --no-check-certificate -i latest -O h2o.zip && rm latest && \
     unzip h2o.zip && rm h2o.zip && cp h2o-*/h2o.jar . && \
-    pip install `find . -name "*whl"` && \
+    pip install `find . -name "*whl"`
 
 
 RUN pip install --upgrade mpld3 && \
